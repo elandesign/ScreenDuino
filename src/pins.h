@@ -11,6 +11,6 @@
 #define PIN_DOWN 5 // PD5 PCINT21
 
 #define PIN_SCLK 13
-#define PIN_MOSI 12
+#define PIN_MOSI 11
 
 #endif
