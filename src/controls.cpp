@@ -8,11 +8,17 @@ volatile bool controlPositionChanged = false;
 volatile bool okPressed = false;
 volatile bool cancelPressed = false;
 
-// State of each button, HIGH due to pullup resistors
+// Debounce
 volatile bool okState = HIGH;
 volatile bool cancelState = HIGH;
 volatile bool upState = HIGH;
 volatile bool downState = HIGH;
+volatile unsigned long okLastInterrupt = 0;
+volatile unsigned long cancelLastInterrupt = 0;
+volatile unsigned long upLastInterrupt = 0;
+volatile unsigned long downLastInterrupt = 0;
+
+#define DEBOUNCE 100 // 100ms debounce time
 
 void setupControls() {
   pinMode(PIN_UP, INPUT);
@@ -36,33 +42,51 @@ void setupControls() {
 }
 
 ISR(PCINT2_vect) {
+  unsigned long time = millis();
+
   // OK
-  bool ok = digitalRead(PIN_OK);
-  if(ok != okState) {
-    okPressed = ok == LOW;
-    okState = ok;
+  bool okNow = digitalRead(PIN_OK);
+  if(okNow != okState) {
+    if(okLastInterrupt + DEBOUNCE < time) {
+      okPressed = okNow == LOW;
+      okLastInterrupt = time;
+    }
+    okState = okNow;
   }
 
   // Cancel
-  bool cancel = digitalRead(PIN_CANCEL);
-  if(cancel != cancelState) {
-    cancelPressed = cancel == LOW;
-    cancelState = cancel;
+  bool cancelNow = digitalRead(PIN_CANCEL);
+  if(cancelNow != cancelState) {
+    if(cancelLastInterrupt + DEBOUNCE < time) {
+      cancelPressed = cancelNow == LOW;
+      cancelLastInterrupt = time;
+    }
+    cancelState = cancelNow;
   }
 
   // Up
-  bool up = digitalRead(PIN_UP);
-  if(up != upState) {
-    controlPosition++;
-    controlPositionChanged = up == LOW;
-    upState = up;
+  bool upNow = digitalRead(PIN_UP);
+  if(upNow != upState) {
+    if(upLastInterrupt + DEBOUNCE < time) {
+      if(upNow == LOW) {
+        controlPosition++;
+        controlPositionChanged = true;
+      }
+      upLastInterrupt = time;
+    }
+    upState = upNow;
   }
 
   // Down
-  bool down = digitalRead(PIN_DOWN);
-  if(down != downState) {
-    controlPosition++;
-    controlPositionChanged = down == LOW;
-    downState = down;
+  bool downNow = digitalRead(PIN_DOWN);
+  if(downNow != downState) {
+    if(downLastInterrupt + DEBOUNCE < time) {
+      if(downNow == LOW) {
+        controlPosition--;
+        controlPositionChanged = true;
+      }
+      downLastInterrupt = time;
+    }
+    downState = downNow;
   }
 }
