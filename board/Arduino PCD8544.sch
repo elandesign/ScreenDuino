@@ -16639,8 +16639,6 @@ Source: www.farnell.com/datasheets/247.pdf</description>
 <smd name="VBUS1" x="2.7" y="1.3" dx="0.4" dy="1.4" layer="1" rot="R90"/>
 <text x="-1.27" y="5.969" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-1.27" y="5.461" size="0.4064" layer="27">&gt;VALUE</text>
-<hole x="2.2" y="1.9" drill="0.85"/>
-<hole x="2.2" y="-1.9" drill="0.85"/>
 </package>
 </packages>
 <symbols>
